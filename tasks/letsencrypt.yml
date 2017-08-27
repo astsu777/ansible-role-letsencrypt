@@ -1,0 +1,16 @@
+---
+- name: (LETSENCRYPT) Install OpenSSL and Let's Encrypt
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - openssl
+    - certbot
+
+- name: (LETSENCRYPT) Setup automatic certificate renewal via certbot
+  cron:
+    name: Renew LetsEncrypt SSL certificates
+    user: root
+    minute: 0
+    hour: 11,23
+    job: "certbot renew -q 2>&1 | ts '[%Y-%m-%d %H:%M:%S]' >> /var/log/cron/cerbot_renew.log"
